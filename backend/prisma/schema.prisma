@@ -1,13 +1,121 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id                Int      @id @default(autoincrement())
+  email             String   @unique
+  passwordHash      String
+  firstName         String
+  lastName          String
+  phoneNumber       String?
+  city              String?
+  country           String?
+  additionalInfo    String?
+  profilePictureUrl String? // Cloudinary URL
+  role              Role     @default(USER)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  trips          Trip[]
+  communityPosts CommunityPost[]
+}
+
+model Trip {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  budget      Float
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  stops          Stop[]
+  expenses       Expense[]
+  communityPosts CommunityPost[]
+}
+
+model Stop {
+  id        Int      @id @default(autoincrement())
+  city      String
+  country   String
+  startDate DateTime
+  endDate   DateTime
+
+  tripId Int
+  trip   Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  activities Activity[]
+}
+
+model Activity {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  cost        Float
+  duration    String // e.g. "2 days", "45 mins"
+  createdAt   DateTime @default(now())
+
+  stopId Int
+  stop   Stop @relation(fields: [stopId], references: [id], onDelete: Cascade)
+}
+
+model Expense {
+  id          Int      @id @default(autoincrement())
+  category    String
+  amount      Float
+  description String?
+  createdAt   DateTime @default(now())
+
+  tripId Int
+  trip   Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}
+
+model CommunityPost {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  category  String
+  createdAt DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tripId Int?
+  trip   Trip? @relation(fields: [tripId], references: [id], onDelete: SetNull)
+}
+
+model City {
+  id      Int    @id @default(autoincrement())
+  name    String
+  country String
+  region  String
+
+  activities ExploreActivity[]
+}
+
+model ExploreActivity {
+  id       Int    @id @default(autoincrement())
+  name     String
+  type     String
+  cost     Float
+  duration String // e.g. "2 hours"
+
+  cityId Int
+  city   City @relation(fields: [cityId], references: [id], onDelete: Cascade)
 }
