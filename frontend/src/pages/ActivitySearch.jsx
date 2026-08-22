@@ -1,14 +1,6 @@
 import { useMemo, useState } from "react";
-import {
-  Check,
-  ChevronDown,
-  Filter,
-  Globe2,
-  MapPin,
-  Search,
-  SlidersHorizontal,
-  UserCircle,
-} from "lucide-react";
+import { Check, ChevronDown, Filter, MapPin, Search, SlidersHorizontal } from "lucide-react";
+import Header from "../components/Header";
 
 const activities = [
   {
@@ -103,26 +95,7 @@ function ActivitySearch() {
 
   return (
     <main className="min-h-screen bg-[#f5f3ed] text-[#1b2821]">
-      <header className="border-b border-[#d8ddd6] bg-[#fbfaf6]">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
-          <a
-            className="flex items-center gap-2.5 text-sm font-bold tracking-tight"
-            href="/trips"
-          >
-            <span className="grid h-8 w-8 place-items-center rounded-[13px_13px_13px_3px] bg-[#1f5b45] text-[#f5f3ed]">
-              <Globe2 size={17} aria-hidden="true" />
-            </span>
-            GlobeTrotter
-          </a>
-          <a
-            className="grid h-9 w-9 place-items-center rounded-full border border-[#ccd5ce] text-[#1f5b45] transition hover:bg-[#eaf0ea]"
-            href="/profile"
-            aria-label="Open profile"
-          >
-            <UserCircle size={20} strokeWidth={1.7} />
-          </a>
-        </div>
-      </header>
+      <Header />
 
       <div className="mx-auto max-w-6xl px-5 py-8 sm:px-8 sm:py-11">
         <div className="mb-7">

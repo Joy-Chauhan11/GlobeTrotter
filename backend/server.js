@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import path from "path";
 import { ENV } from "./libs/env.js";
 import console from "console";
@@ -12,6 +13,13 @@ import adminRoutes from "./routes/adminRoutes.js";
 const app = express();
 
 app.use(express.json());
+// Allow frontend dev server to talk to this API
+app.use(
+    cors({
+        origin: process.env.FRONTEND_ORIGIN || "http://localhost:5173",
+        credentials: true,
+    }),
+);
 
 app.get("/", (req, res) => {
     res.send("Heyyyy Plan Your trip here!!!!");
