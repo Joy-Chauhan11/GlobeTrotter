@@ -1,8 +1,11 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
-import { SignIn } from '@clerk/clerk-react';
-import { SignUp } from '@clerk/clerk-react';
+import TripListing from "./pages/TripListing.jsx";
+import UserProfile from "./pages/UserProfile.jsx";
+import ActivitySearch from "./pages/ActivitySearch.jsx";
+import { SignIn } from "@clerk/clerk-react";
+import { SignUp } from "@clerk/clerk-react";
 
 function App() {
   return (
@@ -10,8 +13,17 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/clerk/sign-in" element={<SignIn routing="path" path="/clerk/sign-in" />} />
-        <Route path="/clerk/sign-up" element={<SignUp routing="path" path="/clerk/sign-up" />} />
+        <Route path="/trips" element={<TripListing />} />
+        <Route path="/profile" element={<UserProfile />} />
+        <Route path="/activities" element={<ActivitySearch />} />
+        <Route
+          path="/clerk/sign-in"
+          element={<SignIn routing="path" path="/clerk/sign-in" />}
+        />
+        <Route
+          path="/clerk/sign-up"
+          element={<SignUp routing="path" path="/clerk/sign-up" />}
+        />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
