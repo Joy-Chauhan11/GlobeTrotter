@@ -28,6 +28,8 @@ model User {
 
   trips          Trip[]
   communityPosts CommunityPost[]
+  postLikes      PostLike[]
+  postComments   PostComment[]
 }
 
 model Trip {
@@ -38,6 +40,7 @@ model Trip {
   endDate     DateTime
   budget      Float
   isPublic    Boolean  @default(false)
+  imageUrl    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -90,6 +93,7 @@ model CommunityPost {
   title     String
   content   String
   category  String
+  imageUrl  String?
   createdAt DateTime @default(now())
 
   userId Int
@@ -97,6 +101,34 @@ model CommunityPost {
 
   tripId Int?
   trip   Trip? @relation(fields: [tripId], references: [id], onDelete: SetNull)
+
+  likes    PostLike[]
+  comments PostComment[]
+}
+
+model PostLike {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId Int
+  post   CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+}
+
+model PostComment {
+  id        Int      @id @default(autoincrement())
+  text      String
+  createdAt DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId Int
+  post   CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 model City {
@@ -104,6 +136,7 @@ model City {
   name    String
   country String
   region  String
+  imageUrl String?
 
   activities ExploreActivity[]
 }
@@ -114,6 +147,7 @@ model ExploreActivity {
   type     String
   cost     Float
   duration String // e.g. "2 hours"
+  imageUrl String?
 
   cityId Int
   city   City @relation(fields: [cityId], references: [id], onDelete: Cascade)

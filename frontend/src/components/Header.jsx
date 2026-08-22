@@ -26,8 +26,11 @@ export default function Header() {
               <Link className="text-sm font-medium text-[#405047] hover:text-[#1f5b45]" to="/dashboard">Dashboard</Link>
               <Link className="text-sm font-medium text-[#405047] hover:text-[#1f5b45]" to="/trips">My Trips</Link>
               <Link className="text-sm font-medium text-[#405047] hover:text-[#1f5b45]" to="/explore">Explore</Link>
-              <Link className="text-sm font-medium text-[#405047] hover:text-[#1f5b45]" to="/activities">Activities</Link>
+              <Link className="text-sm font-medium text-[#405047] hover:text-[#1f5b45]" to="/calendar">Calendar</Link>
               <Link className="text-sm font-medium text-[#405047] hover:text-[#1f5b45]" to="/community">Community</Link>
+              {user?.role === 'ADMIN' && (
+                <Link className="text-sm font-bold text-[#1f5b45] bg-[#edf3ed] px-2 py-1 rounded" to="/admin">Admin</Link>
+              )}
             </>
           )}
         </nav>

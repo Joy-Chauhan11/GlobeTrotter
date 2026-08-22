@@ -6,11 +6,17 @@ function DestinationCard({ destination, compact = false }) {
       className={`group overflow-hidden rounded-lg border border-[#d8ddd6] bg-[#fbfaf6] ${compact ? "" : "min-w-[220px]"}`}
     >
       <div
-        className={`relative h-28 bg-gradient-to-br ${destination.color}`}
+        className="relative h-28 overflow-hidden"
         aria-hidden="true"
       >
+        {destination.imageUrl ? (
+          <img src={destination.imageUrl} alt={destination.name} className="absolute inset-0 h-full w-full object-cover" />
+        ) : (
+          <div className={`absolute inset-0 h-full w-full bg-gradient-to-br ${destination.color}`} />
+        )}
+        <div className="absolute inset-0 bg-black/10" />
         <MapPin
-          className="absolute bottom-3 left-4 text-[#1f5b45]/60"
+          className="absolute bottom-3 left-4 text-white drop-shadow-md"
           size={19}
         />
         <span className="absolute right-4 top-4 h-9 w-9 rounded-full border border-white/50" />

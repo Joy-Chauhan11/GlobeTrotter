@@ -32,6 +32,19 @@ export const getCommunity = async (req, res) => {
         sort === "oldest"
           ? { createdAt: "asc" }
           : { createdAt: "desc" },
+      include: {
+        likes: true,
+        comments: {
+          include: {
+            user: {
+              select: { id: true, firstName: true, lastName: true, profilePictureUrl: true }
+            }
+          }
+        },
+        user: {
+          select: { id: true, firstName: true, lastName: true, profilePictureUrl: true }
+        }
+      }
     });
 
     res.status(200).json(posts);
@@ -77,6 +90,7 @@ export const createPost = async (req, res) => {
       content,
       category,
       tripId,
+      imageUrl,
     } = req.body;
 
     const post = await prisma.communityPost.create({
@@ -84,7 +98,9 @@ export const createPost = async (req, res) => {
         title,
         content,
         category,
-        tripId,
+        tripId: tripId ? Number(tripId) : null,
+        imageUrl,
+        userId: req.user.id,
       },
     });
 
@@ -94,6 +110,68 @@ export const createPost = async (req, res) => {
       message: "Failed to create post",
       error: error.message,
     });
+  }
+};
+
+export const toggleLike = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const userId = req.user.id;
+
+    const existingLike = await prisma.postLike.findUnique({
+      where: {
+        userId_postId: {
+          userId: Number(userId),
+          postId: Number(postId),
+        }
+      }
+    });
+
+    if (existingLike) {
+      await prisma.postLike.delete({
+        where: { id: existingLike.id }
+      });
+      return res.status(200).json({ message: "Post unliked" });
+    } else {
+      await prisma.postLike.create({
+        data: {
+          userId: Number(userId),
+          postId: Number(postId),
+        }
+      });
+      return res.status(200).json({ message: "Post liked" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Failed to toggle like", error: error.message });
+  }
+};
+
+export const addComment = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const { text } = req.body;
+    const userId = req.user.id;
+
+    if (!text) {
+      return res.status(400).json({ message: "Comment text is required" });
+    }
+
+    const comment = await prisma.postComment.create({
+      data: {
+        text,
+        userId: Number(userId),
+        postId: Number(postId),
+      },
+      include: {
+        user: {
+          select: { id: true, firstName: true, lastName: true, profilePictureUrl: true }
+        }
+      }
+    });
+
+    res.status(201).json(comment);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to add comment", error: error.message });
   }
 };
 

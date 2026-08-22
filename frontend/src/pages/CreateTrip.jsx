@@ -21,6 +21,7 @@ const suggestions = [
     country: "Japan",
     detail: "Temples & gardens",
     color: "from-[#d8e5d9] to-[#a9c5b4]",
+    imageUrl: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&q=80",
   },
   {
     id: 2,
@@ -28,6 +29,7 @@ const suggestions = [
     country: "Portugal",
     detail: "Hills & ocean air",
     color: "from-[#ead2c7] to-[#c58978]",
+    imageUrl: "https://images.unsplash.com/photo-1558102822-da570eb113ed?w=600&q=80",
   },
   {
     id: 3,
@@ -35,6 +37,7 @@ const suggestions = [
     country: "Morocco",
     detail: "Markets & riads",
     color: "from-[#f1dfbf] to-[#e7b687]",
+    imageUrl: "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=600&q=80",
   },
 ];
 
@@ -47,6 +50,7 @@ export default function CreateTrip() {
     startDate: "",
     endDate: "",
     budget: "",
+    destination: "",
   });
 
   const [selectedPlace, setSelectedPlace] = useState(null);
@@ -69,6 +73,7 @@ export default function CreateTrip() {
 
     setForm((current) => ({
       ...current,
+      destination: place.name,
       title: current.title || `${place.name} Adventure`,
       description:
         current.description ||
@@ -100,9 +105,8 @@ export default function CreateTrip() {
         description: form.description || undefined,
         startDate: form.startDate,
         endDate: form.endDate,
-        budget: form.budget
-          ? Number(form.budget)
-          : undefined,
+        budget: form.budget ? Number(form.budget) : undefined,
+        destination: form.destination,
       };
 
       console.log("Creating trip:", payload);
@@ -305,16 +309,11 @@ export default function CreateTrip() {
                 />
 
                 <input
-                  className="min-h-11 w-full rounded-md border border-[#d8ddd6] bg-white px-3 pl-10 text-sm font-normal outline-none"
-                  value={
-                    selectedPlace
-                      ? suggestions.find(
-                          (place) => place.id === selectedPlace
-                        )?.name || ""
-                      : ""
-                  }
-                  placeholder="Select a destination below"
-                  readOnly
+                  className="min-h-11 w-full rounded-md border border-[#d8ddd6] bg-white px-3 pl-10 text-sm font-normal outline-none focus:border-[#1f5b45]"
+                  name="destination"
+                  value={form.destination}
+                  onChange={updateForm}
+                  placeholder="e.g. Paris or Tokyo"
                 />
 
               </div>

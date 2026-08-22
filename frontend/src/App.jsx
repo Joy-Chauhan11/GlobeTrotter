@@ -18,9 +18,9 @@ import ActivitySearch from "./pages/ActivitySearch.jsx";
 import Community from "./pages/Community.jsx";
 import ShareTrip from "./pages/ShareTrip.jsx";
 
-import CalendarPage from "./pages/Calendar.jsx";
+import CalendarView from "./pages/CalendarView.jsx";
 import UserProfile from "./pages/UserProfile.jsx";
-import Admin from "./pages/Admin.jsx";
+import AdminDashboard from "./pages/AdminDashboard.jsx";
 
 function App() {
   return (
@@ -49,9 +49,9 @@ function App() {
         <Route path="/explore" element={<RequireAuth><Explore /></RequireAuth>} />
         <Route path="/activities" element={<RequireAuth><ActivitySearch /></RequireAuth>} />
         <Route path="/community" element={<RequireAuth><Community /></RequireAuth>} />
-        <Route path="/calendar" element={<RequireAuth><CalendarPage /></RequireAuth>} />
+        <Route path="/calendar" element={<RequireAuth><CalendarView /></RequireAuth>} />
         <Route path="/profile" element={<RequireAuth><UserProfile /></RequireAuth>} />
-        <Route path="/admin" element={<RequireAuth><Admin /></RequireAuth>} />
+        <Route path="/admin" element={<RequireAuth><AdminDashboard /></RequireAuth>} />
 
         {/* ========================= FALLBACK ========================= */}
         <Route path="*" element={<Navigate to="/" replace />} />

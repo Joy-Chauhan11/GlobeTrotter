@@ -44,8 +44,12 @@ export default function Explore() {
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {cities.map(city => (
                 <div key={city.id} className="group relative overflow-hidden rounded-xl bg-white border border-[#d8ddd6] shadow-sm hover:shadow-md transition">
-                  <div className="h-32 bg-[#edf3ed] relative flex items-center justify-center">
-                    <MapPin size={32} className="text-[#1f5b45]/30 group-hover:scale-110 transition-transform duration-300" />
+                  <div className="h-32 bg-[#edf3ed] relative overflow-hidden flex items-center justify-center">
+                    {city.imageUrl ? (
+                      <img src={city.imageUrl} alt={city.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    ) : (
+                      <MapPin size={32} className="text-[#1f5b45]/30 group-hover:scale-110 transition-transform duration-300" />
+                    )}
                   </div>
                   <div className="p-5">
                     <h3 className="text-xl font-bold text-[#1b2821]">{city.name}</h3>

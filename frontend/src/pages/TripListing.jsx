@@ -160,14 +160,20 @@ function TripListing() {
                       key={trip.id}
                     >
                       <div
-                        className={`relative min-h-28 w-full bg-gradient-to-br ${trip.color} sm:w-44`}
+                        className="relative min-h-28 w-full sm:w-44 overflow-hidden"
                         aria-hidden="true"
                       >
+                        {trip.imageUrl ? (
+                          <img src={trip.imageUrl} alt={trip.title} className="absolute inset-0 h-full w-full object-cover" />
+                        ) : (
+                          <div className={`absolute inset-0 h-full w-full bg-gradient-to-br ${trip.color || "from-[#d8e5d9] to-[#a9c5b4]"}`} />
+                        )}
+                        <div className="absolute inset-0 bg-black/10" />
                         <MapPin
-                          className="absolute bottom-4 left-5 text-[#1f5b45]/60"
+                          className="absolute bottom-4 left-5 text-white drop-shadow-md"
                           size={21}
                         />
-                        <span className="absolute right-4 top-4 h-10 w-10 rounded-full border border-white/45" />
+                        <span className="absolute right-4 top-4 h-10 w-10 rounded-full border border-white/50" />
                       </div>
                       <div className="flex flex-1 flex-col justify-between gap-4 p-5 sm:flex-row sm:items-center sm:px-7">
                         <div>

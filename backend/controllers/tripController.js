@@ -55,20 +55,36 @@ export const getTrips = async (req, res) => {
 // CREATE trip
 export const createTrip = async (req, res) => {
   try {
-    const { title, description, startDate, endDate, budget } = req.body;
+    const { title, description, startDate, endDate, budget, destination } = req.body;
     const userId = req.userId; // from JWT middleware
 
     const budgetValue = budget !== undefined && budget !== null && budget !== "" ? Number(budget) : 0;
 
+    const tripData = {
+      title,
+      description,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+      budget: budgetValue,
+      userId,
+      imageUrl: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80", // Default beautiful travel image
+    };
+
+    if (destination) {
+      tripData.stops = {
+        create: [
+          {
+            city: destination,
+            country: "",
+            startDate: new Date(startDate),
+            endDate: new Date(endDate),
+          }
+        ]
+      };
+    }
+
     const trip = await prisma.trip.create({
-      data: {
-        title,
-        description,
-        startDate: new Date(startDate),
-        endDate: new Date(endDate),
-        budget: budgetValue,
-        userId,
-      },
+      data: tripData,
     });
 
     res.status(201).json(trip);

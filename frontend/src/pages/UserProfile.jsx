@@ -9,8 +9,14 @@ function TripCard({ trip }) {
   return (
     <Link to={`/trips/${trip.id}/itinerary`}>
       <article className="group overflow-hidden rounded-lg border border-[#d8ddd6] bg-[#fbfaf6] hover:shadow-md transition">
-        <div className={`relative h-24 bg-gradient-to-br ${trip.color || "from-[#d8e5d9] to-[#a9c5b4]"}`} aria-hidden="true">
-          <MapPin className="absolute bottom-3 left-3 text-[#1f5b45]/60" size={17} />
+        <div className="relative h-24 overflow-hidden" aria-hidden="true">
+          {trip.imageUrl ? (
+            <img src={trip.imageUrl} alt={trip.title} className="absolute inset-0 h-full w-full object-cover" />
+          ) : (
+            <div className={`absolute inset-0 h-full w-full bg-gradient-to-br ${trip.color || "from-[#d8e5d9] to-[#a9c5b4]"}`} />
+          )}
+          <div className="absolute inset-0 bg-black/10" />
+          <MapPin className="absolute bottom-3 left-3 text-white drop-shadow-md" size={17} />
           <span className="absolute right-3 top-3 h-7 w-7 rounded-full border border-white/50" />
         </div>
         <div className="p-3.5">

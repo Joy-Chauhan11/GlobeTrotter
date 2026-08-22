@@ -63,6 +63,30 @@ export async function getExploreActivities(query = "") {
   return request(url);
 }
 
+export async function toggleLikePost(postId) {
+  return request(`/api/community/${postId}/like`, { method: "POST" });
+}
+
+export async function addCommentPost(postId, text) {
+  return request(`/api/community/${postId}/comments`, { method: "POST", body: JSON.stringify({ text }) });
+}
+
+export async function getAdminUsers() {
+  return request(`/api/admin/users`);
+}
+
+export async function getAdminPopularCities() {
+  return request(`/api/admin/popular-cities`);
+}
+
+export async function getAdminPopularActivities() {
+  return request(`/api/admin/popular-activities`);
+}
+
+export async function getAdminAnalytics() {
+  return request(`/api/admin/analytics`);
+}
+
 export default {
   getTrips,
   createTrip,
@@ -74,4 +98,10 @@ export default {
   getCommunityPosts,
   getExploreCities,
   getExploreActivities,
+  toggleLikePost,
+  addCommentPost,
+  getAdminUsers,
+  getAdminPopularCities,
+  getAdminPopularActivities,
+  getAdminAnalytics,
 };
