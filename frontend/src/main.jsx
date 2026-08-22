@@ -6,10 +6,23 @@ import { ClerkProvider } from '@clerk/clerk-react';
 
 const clerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || '';
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <ClerkProvider publishableKey={clerkKey}>
+const root = createRoot(document.getElementById('root'));
+
+if (!clerkKey) {
+  // Render app without Clerk but show a clear warning. This avoids runtime
+  // failures when the publishable key is not set in Vite env.
+  console.warn('VITE_CLERK_PUBLISHABLE_KEY is not set. Clerk routes will be disabled.');
+  root.render(
+    <StrictMode>
       <App />
-    </ClerkProvider>
-  </StrictMode>
-);
+    </StrictMode>
+  );
+} else {
+  root.render(
+    <StrictMode>
+      <ClerkProvider publishableKey={clerkKey}>
+        <App />
+      </ClerkProvider>
+    </StrictMode>
+  );
+}
