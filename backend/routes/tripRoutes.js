@@ -19,8 +19,12 @@ import {
   deleteExpense,
   getBudget,
 } from "../controllers/tripController.js";
+import { requireAuth } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
+
+// All trip routes require authentication
+router.use(requireAuth);
 
 // Trips
 router.get("/", getTrips);

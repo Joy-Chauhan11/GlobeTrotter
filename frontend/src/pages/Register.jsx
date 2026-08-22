@@ -1,241 +1,129 @@
 import { useState } from "react";
-import {
-  ArrowRight,
-  Eye,
-  EyeOff,
-  LockKeyhole,
-  Mail,
-  Plane,
-  UserRound,
-} from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, Plane, User } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 
-function Register() {
+export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmation: "",
-    terms: false,
-  });
+  const [form, setForm] = useState({ firstName: "", lastName: "", email: "", password: "" });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { register } = useAuth();
 
-  function handleChange(event) {
-    const { name, value, checked, type } = event.target;
-    setForm((currentForm) => ({
-      ...currentForm,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
     setError("");
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    if (!form.name || !form.email || !form.password || !form.confirmation) {
-      setError("Complete all fields to create your account.");
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (!form.firstName || !form.email || !form.password) {
+      setError("First name, email, and password are required.");
       return;
     }
-    if (form.password !== form.confirmation) {
-      setError("Passwords do not match.");
+    if (form.password.length < 6) {
+      setError("Password must be at least 6 characters.");
       return;
     }
-    if (!form.terms) {
-      setError("Please accept the terms to continue.");
-      return;
+    try {
+      setLoading(true);
+      await register(form.email, form.password, form.firstName, form.lastName);
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message || "Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
-    // Redirect to Clerk sign-up page
-    navigate("/clerk/sign-up");
   }
 
   return (
-    <main className="min-h-screen flex items-stretch bg-gradient-to-br from-white to-purple-50">
+    <main className="min-h-screen flex items-stretch bg-gradient-to-br from-[#f5f3ed] to-[#e6e2d3]">
+      {/* Left hero */}
       <section className="w-1/2 hidden md:flex flex-col justify-center items-start p-12 bg-white">
-        <a
-          className="flex items-center gap-2 text-2xl font-semibold text-purple-700"
-          href="/login"
-        >
-          <span className="brand-mark inline-block p-1 bg-purple-100 rounded-full">
-            <Plane size={20} />
-          </span>
+        <Link to="/" className="flex items-center gap-2 text-2xl font-semibold text-[#1f5b45]">
+          <span className="inline-block p-1 bg-[#edf3ed] rounded-full"><Plane size={20} /></span>
           <span>GlobeTrotter</span>
-        </a>
+        </Link>
         <div className="mt-10 max-w-md">
-          <p className="text-sm text-gray-500">Make room for wonder</p>
-          <h1 className="text-4xl font-extrabold text-gray-900 mt-4">
-            Every journey{" "}
-            <span className="text-purple-600">starts with a plan.</span>
+          <p className="text-sm font-bold uppercase tracking-[0.16em] text-[#526159]">Make room for wonder</p>
+          <h1 className="text-4xl font-serif text-[#1b2821] mt-4">
+            Every journey <span className="text-[#1f5b45] font-semibold">starts with a plan.</span>
           </h1>
-          <p className="mt-4 text-gray-600">
-            Create your free account and turn the places on your list into
-            memories in the making.
-          </p>
+          <p className="mt-4 text-[#526159]">Create your free account and turn the places on your list into memories in the making.</p>
         </div>
       </section>
 
+      {/* Right form */}
       <section className="flex-1 flex flex-col justify-center items-center p-8">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+        <div className="w-full max-w-md bg-white rounded-2xl border border-[#d8ddd6] shadow-[0_10px_24px_rgba(31,91,69,0.08)] p-8">
           <div className="flex items-center gap-3 mb-6">
-            <span className="brand-mark inline-block p-2 bg-purple-100 rounded-full">
-              <Plane size={18} />
-            </span>
-            <h2 className="text-xl font-semibold">Create your account</h2>
+            <span className="inline-block p-2 bg-[#edf3ed] rounded-full text-[#1f5b45]"><Plane size={18} /></span>
+            <h2 className="text-xl font-bold text-[#1b2821]">Create your account</h2>
           </div>
 
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
-            <div>
-              <label
-                className="block text-sm font-medium text-gray-700 mb-1"
-                htmlFor="name"
-              >
-                Full name
-              </label>
-              <div className="flex items-center border rounded-md p-2">
-                <UserRound className="text-gray-400" />
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  value={form.name}
-                  onChange={handleChange}
-                  placeholder="Your full name"
-                  autoComplete="name"
-                  className="ml-3 flex-1 outline-none"
-                />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-bold text-[#526159] mb-1" htmlFor="firstName">First name</label>
+                <div className="flex items-center border border-[#d8ddd6] rounded-md p-2.5 focus-within:border-[#1f5b45]">
+                  <User className="text-[#8b968e]" size={16} />
+                  <input id="firstName" name="firstName" type="text" value={form.firstName} onChange={handleChange}
+                    placeholder="Alex" className="ml-2 flex-1 outline-none text-[#1b2821] placeholder:text-[#9ca69f] bg-transparent text-sm" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-[#526159] mb-1" htmlFor="lastName">Last name</label>
+                <div className="flex items-center border border-[#d8ddd6] rounded-md p-2.5 focus-within:border-[#1f5b45]">
+                  <User className="text-[#8b968e]" size={16} />
+                  <input id="lastName" name="lastName" type="text" value={form.lastName} onChange={handleChange}
+                    placeholder="Morgan" className="ml-2 flex-1 outline-none text-[#1b2821] placeholder:text-[#9ca69f] bg-transparent text-sm" />
+                </div>
               </div>
             </div>
 
             <div>
-              <label
-                className="block text-sm font-medium text-gray-700 mb-1"
-                htmlFor="email"
-              >
-                Email address
-              </label>
-              <div className="flex items-center border rounded-md p-2">
-                <Mail className="text-gray-400" />
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  placeholder="you@example.com"
-                  autoComplete="email"
-                  className="ml-3 flex-1 outline-none"
-                />
+              <label className="block text-sm font-bold text-[#526159] mb-1" htmlFor="email">Email address</label>
+              <div className="flex items-center border border-[#d8ddd6] rounded-md p-2.5 focus-within:border-[#1f5b45]">
+                <Mail className="text-[#8b968e]" size={18} />
+                <input id="email" name="email" type="email" value={form.email} onChange={handleChange}
+                  placeholder="you@example.com" autoComplete="email"
+                  className="ml-3 flex-1 outline-none text-[#1b2821] placeholder:text-[#9ca69f] bg-transparent" />
               </div>
             </div>
 
             <div>
-              <label
-                className="block text-sm font-medium text-gray-700 mb-1"
-                htmlFor="password"
-              >
-                Password
-              </label>
-              <div className="flex items-center border rounded-md p-2">
-                <LockKeyhole className="text-gray-400" />
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  value={form.password}
-                  onChange={handleChange}
-                  placeholder="Create a password"
-                  autoComplete="new-password"
-                  className="ml-3 flex-1 outline-none"
-                />
-                <button
-                  className="ml-2 text-gray-500"
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  aria-label="Toggle password"
-                >
-                  {showPassword ? <EyeOff /> : <Eye />}
+              <label className="block text-sm font-bold text-[#526159] mb-1" htmlFor="password">Password</label>
+              <div className="flex items-center border border-[#d8ddd6] rounded-md p-2.5 focus-within:border-[#1f5b45]">
+                <LockKeyhole className="text-[#8b968e]" size={18} />
+                <input id="password" name="password" type={showPassword ? "text" : "password"}
+                  value={form.password} onChange={handleChange}
+                  placeholder="At least 6 characters" autoComplete="new-password"
+                  className="ml-3 flex-1 outline-none text-[#1b2821] placeholder:text-[#9ca69f] bg-transparent" />
+                <button type="button" className="ml-2 text-[#8b968e] hover:text-[#526159]"
+                  onClick={() => setShowPassword(v => !v)}>
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
 
-            <div>
-              <label
-                className="block text-sm font-medium text-gray-700 mb-1"
-                htmlFor="confirmation"
-              >
-                Confirm password
-              </label>
-              <div className="flex items-center border rounded-md p-2">
-                <LockKeyhole className="text-gray-400" />
-                <input
-                  id="confirmation"
-                  name="confirmation"
-                  type={showConfirmation ? "text" : "password"}
-                  value={form.confirmation}
-                  onChange={handleChange}
-                  placeholder="Repeat your password"
-                  autoComplete="new-password"
-                  className="ml-3 flex-1 outline-none"
-                />
-                <button
-                  className="ml-2 text-gray-500"
-                  type="button"
-                  onClick={() => setShowConfirmation((v) => !v)}
-                  aria-label="Toggle confirmation"
-                >
-                  {showConfirmation ? <EyeOff /> : <Eye />}
-                </button>
-              </div>
-            </div>
-
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                id="terms"
-                name="terms"
-                type="checkbox"
-                checked={form.terms}
-                onChange={handleChange}
-              />
-              <span>
-                I agree to the{" "}
-                <a className="text-purple-600" href="/terms">
-                  terms and conditions
-                </a>
-                .
-              </span>
-            </label>
-
-            {error && <p className="text-sm text-red-500">{error}</p>}
+            {error && <p className="text-sm text-red-600 font-medium">{error}</p>}
 
             <button
-              className="w-full bg-purple-600 text-white py-2 rounded-md flex items-center justify-center gap-2"
-              type="submit"
+              className="w-full bg-[#1f5b45] text-white font-bold py-3 rounded-md flex items-center justify-center gap-2 hover:bg-[#164634] transition-colors mt-2 disabled:opacity-60"
+              type="submit" disabled={loading}
             >
-              Create account <ArrowRight size={16} />
-            </button>
-
-            <div className="text-center text-sm text-gray-500">or</div>
-
-            <button
-              type="button"
-              onClick={() => navigate("/clerk/sign-up")}
-              className="w-full border border-gray-200 py-2 rounded-md"
-            >
-              Continue with Clerk
+              {loading ? "Creating account..." : <><span>Create account</span><ArrowRight size={16} /></>}
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm">
+          <p className="mt-6 text-center text-sm text-[#526159]">
             Already have an account?{" "}
-            <a className="text-purple-600" href="/login">
-              Log in
-            </a>
+            <Link to="/login" className="font-bold text-[#1f5b45] hover:underline">Log in</Link>
           </p>
         </div>
       </section>
     </main>
   );
 }
-
-export default Register;

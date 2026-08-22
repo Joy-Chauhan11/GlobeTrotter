@@ -3,26 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowDownUp, ChevronDown, Filter, MapPin, Search, SlidersHorizontal } from "lucide-react";
 import Header from "../components/Header";
 
-const sampleTrips = [
-  {
-    id: 1,
-    title: "A week in Japan",
-    dates: "Oct 12 - Oct 21, 2026",
-    places: "Tokyo, Kyoto, Osaka",
-    days: "9 days",
-    status: "Ongoing",
-    color: "from-[#d8e5d9] to-[#a9c5b4]",
-  },
-  {
-    id: 2,
-    title: "Mediterranean escape",
-    dates: "Jun 08 - Jun 19, 2026",
-    places: "Barcelona, Nice, Rome",
-    days: "11 days",
-    status: "Upcoming",
-    color: "from-[#f1dfbf] to-[#e7b687]",
-  },
-];
+// Removed sampleTrips array as we now use real data from the database
 
 const sections = ["Ongoing", "Upcoming", "Completed"];
 
@@ -41,11 +22,11 @@ function TripListing() {
       getTrips()
         .then((data) => {
           if (!mounted) return;
-          setTrips(Array.isArray(data) ? data : sampleTrips.concat(data));
+          setTrips(Array.isArray(data) ? data : []);
         })
         .catch((err) => {
-          console.warn("Failed to fetch trips, using sample data.", err);
-          if (mounted) setTrips(sampleTrips);
+          console.warn("Failed to fetch trips", err);
+          if (mounted) setError(err.message);
         })
         .finally(() => mounted && setLoading(false));
     });

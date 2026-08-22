@@ -1,21 +1,53 @@
 import prisma from "../libs/prisma.js";
 
 
-// GET all trips
+// GET all trips for the current user
 export const getTrips = async (req, res) => {
   try {
-    const trips = await prisma.trip.findMany({
-      orderBy: {
-        createdAt: "desc",
-      },
+    const rawTrips = await prisma.trip.findMany({
+      where: { userId: req.userId },
+      orderBy: { startDate: "asc" },
+      include: { stops: true }
+    });
+
+    const colors = [
+      "from-[#d8e5d9] to-[#a9c5b4]",
+      "from-[#f1dfbf] to-[#e7b687]",
+      "from-[#d8e1e5] to-[#a9bbc5]",
+      "from-[#e5d8e1] to-[#c5a9bb]"
+    ];
+
+    const today = new Date();
+
+    const trips = rawTrips.map((trip, index) => {
+      const start = new Date(trip.startDate);
+      const end = new Date(trip.endDate);
+      const dates = `${start.toLocaleDateString("en-US", { month: "short", day: "2-digit" })} - ${end.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" })}`;
+      
+      const diffTime = Math.abs(end - start);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+      const days = `${diffDays} days`;
+      
+      const places = trip.stops.map(s => s.city).join(", ") || "No stops planned";
+      
+      let status = "Upcoming";
+      if (end < today) status = "Completed";
+      else if (start <= today && end >= today) status = "Ongoing";
+
+      return {
+        id: trip.id,
+        title: trip.title,
+        dates,
+        places,
+        days,
+        status,
+        color: colors[index % colors.length],
+      };
     });
 
     res.status(200).json(trips);
   } catch (error) {
-    res.status(500).json({
-      message: "Failed to fetch trips",
-      error: error.message,
-    });
+    res.status(500).json({ message: "Failed to fetch trips", error: error.message });
   }
 };
 
@@ -23,34 +55,8 @@ export const getTrips = async (req, res) => {
 // CREATE trip
 export const createTrip = async (req, res) => {
   try {
-    const {
-      title,
-      description,
-      startDate,
-      endDate,
-      budget,
-    } = req.body;
-
-    // determine userId: prefer explicit userId in body, otherwise use or create a guest user
-    let userId = req.body.userId ? Number(req.body.userId) : undefined;
-
-    if (!userId) {
-      // try to find an existing user to assign ownership
-      const existing = await prisma.user.findFirst();
-      if (existing) {
-        userId = existing.id;
-      } else {
-        const guest = await prisma.user.create({
-          data: {
-            email: `guest-${Date.now()}@local`,
-            passwordHash: "",
-            firstName: "Guest",
-            lastName: "User",
-          },
-        });
-        userId = guest.id;
-      }
-    }
+    const { title, description, startDate, endDate, budget } = req.body;
+    const userId = req.userId; // from JWT middleware
 
     const budgetValue = budget !== undefined && budget !== null && budget !== "" ? Number(budget) : 0;
 
@@ -61,7 +67,7 @@ export const createTrip = async (req, res) => {
         startDate: new Date(startDate),
         endDate: new Date(endDate),
         budget: budgetValue,
-        userId: Number(userId),
+        userId,
       },
     });
 
@@ -73,6 +79,7 @@ export const createTrip = async (req, res) => {
     });
   }
 };
+
 
 
 // GET single trip
@@ -322,20 +329,19 @@ export const addActivity = async (req, res) => {
   try {
     const { stopId } = req.params;
 
-    const {
-      name,
-      description,
-      cost,
-      duration,
-    } = req.body;
+    const { name, description, cost, duration } = req.body;
+
+    if (!name) {
+      return res.status(400).json({ message: "Activity name is required." });
+    }
 
     const activity = await prisma.activity.create({
       data: {
         stopId: Number(stopId),
         name,
-        description,
-        cost,
-        duration,
+        description: description || "",
+        cost: cost !== undefined && cost !== null && cost !== "" ? Number(cost) : 0,
+        duration: duration || "1 hour",
       },
     });
 

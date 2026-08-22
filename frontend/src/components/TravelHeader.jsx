@@ -1,6 +1,6 @@
 import { Globe2, UserCircle } from "lucide-react";
 
-function TravelHeader({ actionLabel, actionHref = "/create-trip" }) {
+function TravelHeader({ actionLabel, actionHref = "/trips/new" }) {
   return (
     <header className="border-b border-[#d8ddd6] bg-[#fbfaf6]">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">

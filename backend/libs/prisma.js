@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 import * as PrismaPkg from "@prisma/client";
 
 // Handle different packaging formats: some installs expose PrismaClient as a

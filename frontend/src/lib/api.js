@@ -1,11 +1,19 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 
+function getToken() {
+  return localStorage.getItem("gt_token") || null;
+}
+
 async function request(path, options = {}) {
+  const token = getToken();
+  const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
   const res = await fetch(`${API_BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
     ...options,
+    headers,
   });
+
   if (!res.ok) {
     const errText = await res.text();
     throw new Error(errText || res.statusText);
@@ -34,4 +42,36 @@ export async function deleteTrip(tripId) {
   return request(`/api/trips/${tripId}`, { method: "DELETE" });
 }
 
-export default { getTrips, createTrip, getTrip, updateTrip, deleteTrip };
+export async function addStop(tripId, payload) {
+  return request(`/api/trips/${tripId}/stops`, { method: "POST", body: JSON.stringify(payload) });
+}
+
+export async function addActivity(tripId, stopId, payload) {
+  return request(`/api/trips/${tripId}/stops/${stopId}/activities`, { method: "POST", body: JSON.stringify(payload) });
+}
+
+export async function getCommunityPosts() {
+  return request(`/api/community`);
+}
+
+export async function getExploreCities() {
+  return request(`/api/explore/cities`);
+}
+
+export async function getExploreActivities(query = "") {
+  const url = query ? `/api/explore/activities?search=${encodeURIComponent(query)}` : `/api/explore/activities`;
+  return request(url);
+}
+
+export default {
+  getTrips,
+  createTrip,
+  getTrip,
+  updateTrip,
+  deleteTrip,
+  addStop,
+  addActivity,
+  getCommunityPosts,
+  getExploreCities,
+  getExploreActivities,
+};
