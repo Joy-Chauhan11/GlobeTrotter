@@ -31,13 +31,37 @@ export const createTrip = async (req, res) => {
       budget,
     } = req.body;
 
+    // determine userId: prefer explicit userId in body, otherwise use or create a guest user
+    let userId = req.body.userId ? Number(req.body.userId) : undefined;
+
+    if (!userId) {
+      // try to find an existing user to assign ownership
+      const existing = await prisma.user.findFirst();
+      if (existing) {
+        userId = existing.id;
+      } else {
+        const guest = await prisma.user.create({
+          data: {
+            email: `guest-${Date.now()}@local`,
+            passwordHash: "",
+            firstName: "Guest",
+            lastName: "User",
+          },
+        });
+        userId = guest.id;
+      }
+    }
+
+    const budgetValue = budget !== undefined && budget !== null && budget !== "" ? Number(budget) : 0;
+
     const trip = await prisma.trip.create({
       data: {
         title,
         description,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
-        budget,
+        budget: budgetValue,
+        userId: Number(userId),
       },
     });
 

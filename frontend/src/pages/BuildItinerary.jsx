@@ -53,6 +53,7 @@ function BuildItinerary() {
   function removeSection(id) {
     setSections((current) => current.filter((section) => section.id !== id));
   }
+
   return (
     <main className="min-h-screen bg-[#f5f3ed] text-[#1b2821]">
       <header className="border-b border-[#d8ddd6] bg-[#fbfaf6]">

@@ -6,7 +6,6 @@ import {
   Check,
   Globe2,
   MapPin,
-  Plane,
 } from "lucide-react";
 
 const suggestions = [
@@ -60,19 +59,18 @@ function CreateTrip() {
       setMessage("Complete the trip name, dates, and place to continue.");
       return;
     }
-    setMessage("Trip details saved. You can now build your itinerary.");
+    setMessage("Trip details saved. Continue to build your itinerary.");
   }
   return (
     <main className="min-h-screen bg-[#f5f3ed] text-[#1b2821]">
       <header className="border-b border-[#d8ddd6] bg-[#fbfaf6]">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4 sm:px-8">
+        <div className="mx-auto flex max-w-5xl items-center px-5 py-4 sm:px-8">
           <a className="flex items-center gap-2.5 text-sm font-bold" href="/">
             <span className="grid h-8 w-8 place-items-center rounded-[13px_13px_13px_3px] bg-[#1f5b45] text-[#f5f3ed]">
               <Globe2 size={17} />
             </span>
             GlobeTrotter
           </a>
-          <Plane className="text-[#1f5b45]" size={20} aria-hidden="true" />
         </div>
       </header>
       <div className="mx-auto max-w-5xl px-5 py-8 sm:px-8 sm:py-11">
@@ -90,8 +88,8 @@ function CreateTrip() {
             Plan a new trip
           </h1>
           <p className="mt-3 max-w-xl text-sm text-[#68756c]">
-            Start with the essentials. You can add more stops and activities
-            once your trip has a shape.
+            Start with the essentials, then shape the journey one stop at a
+            time.
           </p>
         </div>
         <form
@@ -159,7 +157,10 @@ function CreateTrip() {
             </label>
           </div>
           {message && (
-            <p className="mt-4 text-sm font-medium text-[#a34537]" role="alert">
+            <p
+              className="mt-4 text-sm font-medium text-[#1f5b45]"
+              role="status"
+            >
               {message}
             </p>
           )}
@@ -170,12 +171,9 @@ function CreateTrip() {
             Save trip details <ArrowRight size={15} />
           </button>
         </form>
-        <section className="mt-10" aria-labelledby="suggestions-heading">
+        <section className="mt-10">
           <div className="mb-4 flex items-center gap-3">
-            <h2
-              id="suggestions-heading"
-              className="text-xs font-bold uppercase tracking-[.16em] text-[#526159]"
-            >
+            <h2 className="text-xs font-bold uppercase tracking-[.16em] text-[#526159]">
               Suggestions for places to visit / activities to perform
             </h2>
             <span className="h-px flex-1 bg-[#d8ddd6]" />

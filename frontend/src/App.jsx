@@ -1,16 +1,15 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { SignIn, SignUp } from "@clerk/clerk-react";
+import ActivitySearch from "./pages/ActivitySearch.jsx";
+import BuildItinerary from "./pages/BuildItinerary.jsx";
+import CommunityTab from "./pages/CommunityTab.jsx";
+import CreateTrip from "./pages/CreateTrip.jsx";
+import ItineraryView from "./pages/ItineraryView.jsx";
+import LandingPage from "./pages/LandingPage.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import TripListing from "./pages/TripListing.jsx";
 import UserProfile from "./pages/UserProfile.jsx";
-import ActivitySearch from "./pages/ActivitySearch.jsx";
-import ItineraryView from "./pages/ItineraryView.jsx";
-import CommunityTab from "./pages/CommunityTab.jsx";
-import LandingPage from "./pages/LandingPage.jsx";
-import CreateTrip from "./pages/CreateTrip.jsx";
-import BuildItinerary from "./pages/BuildItinerary.jsx";
-import { SignIn } from "@clerk/clerk-react";
-import { SignUp } from "@clerk/clerk-react";
 
 function App() {
   return (
@@ -20,14 +19,15 @@ function App() {
         <Route path="/home" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/create-trip" element={<CreateTrip />} />
+        <Route path="/trips/new" element={<CreateTrip />} />
+        <Route path="/build-itinerary" element={<BuildItinerary />} />
         <Route path="/trips" element={<TripListing />} />
-        <Route path="/profile" element={<UserProfile />} />
         <Route path="/activities" element={<ActivitySearch />} />
         <Route path="/itinerary-view" element={<ItineraryView />} />
         <Route path="/itinerary/:id" element={<ItineraryView />} />
+        <Route path="/profile" element={<UserProfile />} />
         <Route path="/community" element={<CommunityTab />} />
-        <Route path="/create-trip" element={<CreateTrip />} />
-        <Route path="/build-itinerary" element={<BuildItinerary />} />
         <Route
           path="/clerk/sign-in"
           element={
@@ -48,7 +48,7 @@ function App() {
             />
           }
         />
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

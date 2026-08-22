@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Globe2, MapPin, Plus, UserCircle } from "lucide-react";
-import SearchFilterBar from "../components/SearchFilterBar.jsx";
+import SearchToolbar from "../components/SearchToolbar.jsx";
+import TripSummaryCard from "../components/TripSummaryCard.jsx";
 
 const destinations = [
   {
@@ -36,7 +37,6 @@ const destinations = [
     color: "from-[#c4d4e3] to-[#8398b1]",
   },
 ];
-
 const previousTrips = [
   {
     id: 1,
@@ -58,21 +58,21 @@ function LandingPage() {
   const [query, setQuery] = useState("");
   const [region, setRegion] = useState("All regions");
   const [ascending, setAscending] = useState(true);
-  const visibleDestinations = useMemo(
+  const visible = useMemo(
     () =>
       destinations
         .filter((destination) => {
-          const searchable =
+          const text =
             `${destination.name} ${destination.country} ${destination.detail}`.toLowerCase();
           return (
-            (!query || searchable.includes(query.toLowerCase())) &&
+            (!query || text.includes(query.toLowerCase())) &&
             (region === "All regions" || destination.region === region)
           );
         })
-        .sort((first, second) =>
+        .sort((a, b) =>
           ascending
-            ? first.name.localeCompare(second.name)
-            : second.name.localeCompare(first.name),
+            ? a.name.localeCompare(b.name)
+            : b.name.localeCompare(a.name),
         ),
     [ascending, query, region],
   );
@@ -96,7 +96,7 @@ function LandingPage() {
           </a>
         </div>
       </header>
-      <section className="relative overflow-hidden bg-[#244b3b] px-5 py-14 text-[#f5f3ed] sm:px-8 sm:py-20">
+      <section className="relative min-h-[320px] overflow-hidden bg-[#244b3b] px-5 py-14 text-[#f5f3ed] sm:px-8 sm:py-20">
         <div
           className="absolute inset-0 bg-[linear-gradient(110deg,rgba(20,59,45,.94),rgba(20,59,45,.48)),url('https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center"
           aria-hidden="true"
@@ -105,7 +105,7 @@ function LandingPage() {
           <p className="mb-3 text-[11px] font-bold uppercase tracking-[.2em] text-[#d7e4d8]">
             Your world, thoughtfully mapped
           </p>
-          <h1 className="max-w-2xl font-serif text-5xl font-normal leading-[.98] sm:text-7xl">
+          <h1 className="font-serif text-5xl font-normal leading-[.98] sm:text-7xl">
             Where will you
             <br />
             <em className="text-[#d7e4d8]">go next?</em>
@@ -117,7 +117,7 @@ function LandingPage() {
         </div>
       </section>
       <div className="mx-auto max-w-6xl px-5 py-8 sm:px-8 sm:py-11">
-        <SearchFilterBar
+        <SearchToolbar
           query={query}
           onQueryChange={setQuery}
           filter={region}
@@ -125,18 +125,15 @@ function LandingPage() {
           filterOptions={["All regions", "Africa", "Asia", "Europe"]}
           onSort={() => setAscending((current) => !current)}
         />
-        <section className="mt-10" aria-labelledby="regional-heading">
+        <section className="mt-10">
           <div className="mb-4 flex items-center gap-3">
-            <h2
-              id="regional-heading"
-              className="text-xs font-bold uppercase tracking-[.16em] text-[#526159]"
-            >
+            <h2 className="text-xs font-bold uppercase tracking-[.16em] text-[#526159]">
               Top regional selections
             </h2>
             <span className="h-px flex-1 bg-[#d8ddd6]" />
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {visibleDestinations.map((destination) => (
+            {visible.map((destination) => (
               <article
                 className="overflow-hidden rounded-lg border border-[#d8ddd6] bg-[#fbfaf6]"
                 key={destination.id}
@@ -148,12 +145,9 @@ function LandingPage() {
                     className="absolute bottom-3 left-4 text-[#1f5b45]/60"
                     size={19}
                   />
-                  <span className="absolute right-4 top-4 h-9 w-9 rounded-full border border-white/50" />
                 </div>
                 <div className="p-4">
-                  <h3 className="truncate text-sm font-bold">
-                    {destination.name}
-                  </h3>
+                  <h3 className="text-sm font-bold">{destination.name}</h3>
                   <p className="mt-1 text-xs text-[#738078]">
                     {destination.country}
                   </p>
@@ -164,47 +158,17 @@ function LandingPage() {
               </article>
             ))}
           </div>
-          {!visibleDestinations.length && (
-            <p className="mt-3 rounded-lg border border-dashed border-[#bfcac1] p-8 text-center text-sm text-[#68756c]">
-              No destinations match your search.
-            </p>
-          )}
         </section>
-        <section className="mt-11" aria-labelledby="previous-heading">
+        <section className="mt-11">
           <div className="mb-4 flex items-center gap-3">
-            <h2
-              id="previous-heading"
-              className="text-xs font-bold uppercase tracking-[.16em] text-[#526159]"
-            >
+            <h2 className="text-xs font-bold uppercase tracking-[.16em] text-[#526159]">
               Previous trips
             </h2>
             <span className="h-px flex-1 bg-[#d8ddd6]" />
           </div>
           <div className="space-y-3">
             {previousTrips.map((trip) => (
-              <article
-                className="flex flex-col overflow-hidden rounded-lg border border-[#d8ddd6] bg-[#fbfaf6] sm:flex-row"
-                key={trip.id}
-              >
-                <div
-                  className={`h-24 bg-gradient-to-br ${trip.color} sm:h-auto sm:w-40`}
-                />
-                <div className="flex flex-1 items-center justify-between gap-4 p-5">
-                  <div>
-                    <h3 className="text-base font-bold">{trip.name}</h3>
-                    <p className="mt-1 text-xs text-[#68756c]">{trip.dates}</p>
-                    <p className="mt-2 text-sm text-[#536159]">
-                      {trip.destination}
-                    </p>
-                  </div>
-                  <a
-                    className="text-xs font-bold text-[#1f5b45]"
-                    href={`/itinerary/${trip.id}`}
-                  >
-                    View trip →
-                  </a>
-                </div>
-              </article>
+              <TripSummaryCard key={trip.id} trip={trip} />
             ))}
           </div>
         </section>

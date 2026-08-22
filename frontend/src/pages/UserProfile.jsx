@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ArrowLeft,
   ArrowRight,
-  Globe2,
   MapPin,
   Pencil,
   Plane,
   UserCircle,
 } from "lucide-react";
+import Header from "../components/Header";
+import { useUser, SignOutButton } from "@clerk/clerk-react";
 
 const plannedTrips = [
   {
@@ -92,13 +93,35 @@ function TripCard({ trip, compact = false }) {
 }
 
 function UserProfile() {
+  const { isLoaded, isSignedIn, user } = useUser();
+
   const [editing, setEditing] = useState(false);
   const [profile, setProfile] = useState({
-    name: "Alex Morgan",
-    email: "alex.morgan@example.com",
-    location: "London, United Kingdom",
+    name: "Traveler",
+    email: "",
+    location: "",
   });
   const [draftProfile, setDraftProfile] = useState(profile);
+
+  useEffect(() => {
+    if (isLoaded && isSignedIn && user) {
+      const name =
+        user.fullName ||
+        `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
+        "Traveler";
+      const email =
+        user.primaryEmailAddress?.emailAddress ||
+        (user.emailAddresses && user.emailAddresses[0]?.emailAddress) ||
+        "";
+      const location =
+        (user.publicMetadata && user.publicMetadata.location) || "";
+      const newProfile = { name, email, location };
+      // Synchronize the local editing form with the authenticated Clerk user.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setProfile(newProfile);
+      setDraftProfile(newProfile);
+    }
+  }, [isLoaded, isSignedIn, user]);
 
   function startEditing() {
     setDraftProfile(profile);
@@ -130,26 +153,7 @@ function UserProfile() {
 
   return (
     <main className="min-h-screen bg-[#f5f3ed] text-[#1b2821]">
-      <header className="border-b border-[#d8ddd6] bg-[#fbfaf6]">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4 sm:px-8">
-          <a
-            className="flex items-center gap-2.5 text-sm font-bold tracking-tight"
-            href="/trips"
-          >
-            <span className="grid h-8 w-8 place-items-center rounded-[13px_13px_13px_3px] bg-[#1f5b45] text-[#f5f3ed]">
-              <Globe2 size={17} aria-hidden="true" />
-            </span>
-            GlobeTrotter
-          </a>
-          <a
-            className="grid h-9 w-9 place-items-center rounded-full border border-[#ccd5ce] text-[#1f5b45] transition hover:bg-[#eaf0ea]"
-            href="/trips"
-            aria-label="Back to trips"
-          >
-            <UserCircle size={20} strokeWidth={1.7} />
-          </a>
-        </div>
-      </header>
+      <Header />
 
       <div className="mx-auto max-w-5xl px-5 py-7 sm:px-8 sm:py-10">
         <a
@@ -180,12 +184,20 @@ function UserProfile() {
           aria-labelledby="profile-details-heading"
         >
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-            <div className="grid h-24 w-24 shrink-0 place-items-center rounded-full border border-[#aebdaf] bg-[#d9e5d8] text-[#1f5b45]">
-              <UserCircle
-                size={55}
-                strokeWidth={1.1}
-                aria-label="Profile avatar"
-              />
+            <div className="grid h-24 w-24 shrink-0 place-items-center rounded-full border border-[#aebdaf] bg-[#d9e5d8] text-[#1f5b45] overflow-hidden">
+              {user && (user.profileImageUrl || user.imageUrl) ? (
+                <img
+                  src={user.profileImageUrl || user.imageUrl}
+                  alt="avatar"
+                  className="h-24 w-24 object-cover"
+                />
+              ) : (
+                <UserCircle
+                  size={55}
+                  strokeWidth={1.1}
+                  aria-label="Profile avatar"
+                />
+              )}
             </div>
             <div className="min-w-0 flex-1">
               <p className="mb-1 text-[11px] font-bold uppercase tracking-[0.15em] text-[#829087]">
@@ -276,6 +288,13 @@ function UserProfile() {
                 <Pencil size={14} aria-hidden="true" /> Edit details
               </button>
             )}
+            <div className="ml-4">
+              <SignOutButton>
+                <button className="flex w-fit items-center gap-2 rounded-md border border-[#e6bcbc] bg-white px-3.5 py-2 text-xs font-bold text-[#b32b2b] transition hover:bg-[#ffecec]">
+                  Sign out
+                </button>
+              </SignOutButton>
+            </div>
           </div>
         </section>
 
