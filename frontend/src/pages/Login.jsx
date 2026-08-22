@@ -7,12 +7,13 @@ import {
   Mail,
   Plane,
 } from "lucide-react";
-import "./Login.css";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -26,105 +27,129 @@ function Login() {
       setError("Enter your email and password to continue.");
       return;
     }
-    setError("");
+    // Instruct user to use Clerk for now
+    navigate("/clerk/sign-in");
   }
 
   return (
-    <main className="login-page">
-      <section className="login-intro" aria-label="GlobeTrotter introduction">
-        <a className="brand" href="/" aria-label="GlobeTrotter home">
-          <span className="brand-mark">
-            <Plane size={20} aria-hidden="true" />
+    <main className="min-h-screen flex items-stretch bg-gradient-to-br from-white to-purple-50">
+      <section className="w-1/2 hidden md:flex flex-col justify-center items-start p-12 bg-white">
+        <a
+          className="flex items-center gap-2 text-2xl font-semibold text-purple-700"
+          href="/"
+        >
+          <span className="brand-mark inline-block p-1 bg-purple-100 rounded-full">
+            <Plane size={20} />
           </span>
           <span>GlobeTrotter</span>
         </a>
-        <div className="intro-copy">
-          <p className="eyebrow">Your next story starts here</p>
-          <h1>
-            Plan the trip
-            <br />
-            <em>you’ll remember.</em>
+        <div className="mt-10 max-w-md">
+          <p className="text-sm text-gray-500">Your next story starts here</p>
+          <h1 className="text-4xl font-extrabold text-gray-900 mt-4">
+            Plan the trip{" "}
+            <span className="text-purple-600">you’ll remember.</span>
           </h1>
-          <p className="intro-description">
+          <p className="mt-4 text-gray-600">
             Bring every stop, stay, and spontaneous idea into one beautiful
             plan.
           </p>
         </div>
-        <div className="route-line" aria-hidden="true">
-          <span className="route-dot route-dot-start" />
-          <span className="route-stroke" />
-          <span className="route-dot route-dot-end" />
-          <span className="route-label route-label-start">Lisbon</span>
-          <span className="route-label route-label-end">Kyoto</span>
-        </div>
       </section>
 
-      <section className="login-panel">
-        <div className="login-form-wrap">
-          <div className="mobile-brand brand">
-            <span className="brand-mark">
-              <Plane size={18} aria-hidden="true" />
+      <section className="flex-1 flex flex-col justify-center items-center p-8">
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <span className="brand-mark inline-block p-2 bg-purple-100 rounded-full">
+              <Plane size={18} />
             </span>
-            <span>GlobeTrotter</span>
-          </div>
-          <div className="form-heading">
-            <p className="eyebrow">Welcome back</p>
-            <h2>Log in to your account</h2>
-            <p>Pick up where your next adventure begins.</p>
+            <h2 className="text-xl font-semibold">Welcome back</h2>
           </div>
 
-          <form onSubmit={handleSubmit} noValidate>
-            <label htmlFor="email">Email address</label>
-            <div className="input-wrap">
-              <Mail size={18} aria-hidden="true" />
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="you@example.com"
-                autoComplete="email"
-              />
-            </div>
-            <div className="password-label-row">
-              <label htmlFor="password">Password</label>
-              <a href="/forgot-password">Forgot password?</a>
-            </div>
-            <div className="input-wrap">
-              <LockKeyhole size={18} aria-hidden="true" />
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                value={form.password}
-                onChange={handleChange}
-                placeholder="Enter your password"
-                autoComplete="current-password"
-              />
-              <button
-                className="icon-button"
-                type="button"
-                onClick={() => setShowPassword((visible) => !visible)}
-                aria-label={showPassword ? "Hide password" : "Show password"}
+          <form onSubmit={handleSubmit} noValidate className="space-y-4">
+            <div>
+              <label
+                className="block text-sm font-medium text-gray-700 mb-1"
+                htmlFor="email"
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
+                Email address
+              </label>
+              <div className="flex items-center border rounded-md p-2">
+                <Mail className="text-gray-400" />
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  className="ml-3 flex-1 outline-none"
+                />
+              </div>
             </div>
-            {error && (
-              <p className="form-error" role="alert">
-                {error}
-              </p>
-            )}
-            <button className="submit-button" type="submit">
-              Log in <ArrowRight size={18} aria-hidden="true" />
+
+            <div>
+              <div className="flex justify-between items-center">
+                <label
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                  htmlFor="password"
+                >
+                  Password
+                </label>
+                <a className="text-sm text-purple-600" href="/forgot-password">
+                  Forgot?
+                </a>
+              </div>
+              <div className="flex items-center border rounded-md p-2">
+                <LockKeyhole className="text-gray-400" />
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  value={form.password}
+                  onChange={handleChange}
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
+                  className="ml-3 flex-1 outline-none"
+                />
+                <button
+                  type="button"
+                  className="ml-2 text-gray-500"
+                  onClick={() => setShowPassword((v) => !v)}
+                  aria-label="Toggle password"
+                >
+                  {showPassword ? <EyeOff /> : <Eye />}
+                </button>
+              </div>
+            </div>
+
+            {error && <p className="text-sm text-red-500">{error}</p>}
+
+            <button
+              className="w-full bg-purple-600 text-white py-2 rounded-md flex items-center justify-center gap-2"
+              type="submit"
+            >
+              Log in <ArrowRight size={16} />
+            </button>
+
+            <div className="text-center text-sm text-gray-500">or</div>
+
+            <button
+              type="button"
+              onClick={() => navigate("/clerk/sign-in")}
+              className="w-full border border-gray-200 py-2 rounded-md"
+            >
+              Continue with Clerk
             </button>
           </form>
-          <p className="signup-prompt">
-            New to GlobeTrotter? <a href="/register">Create an account</a>
+
+          <p className="mt-6 text-center text-sm">
+            New to GlobeTrotter?{" "}
+            <a className="text-purple-600" href="/register">
+              Create an account
+            </a>
           </p>
         </div>
-        <p className="panel-footer">Plan less. Experience more.</p>
       </section>
     </main>
   );
