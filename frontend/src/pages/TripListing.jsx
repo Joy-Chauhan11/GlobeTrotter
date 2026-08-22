@@ -1,16 +1,9 @@
-import { useMemo, useState } from "react";
-import {
-  ArrowDownUp,
-  ChevronDown,
-  Filter,
-  Globe2,
-  MapPin,
-  Search,
-  SlidersHorizontal,
-  UserCircle,
-} from "lucide-react";
+import { useMemo, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { ArrowDownUp, ChevronDown, Filter, MapPin, Search, SlidersHorizontal } from "lucide-react";
+import Header from "../components/Header";
 
-const trips = [
+const sampleTrips = [
   {
     id: 1,
     title: "A week in Japan",
@@ -29,24 +22,6 @@ const trips = [
     status: "Upcoming",
     color: "from-[#f1dfbf] to-[#e7b687]",
   },
-  {
-    id: 3,
-    title: "Northern lights",
-    dates: "Feb 14 - Feb 20, 2026",
-    places: "Reykjavik, Vik",
-    days: "6 days",
-    status: "Completed",
-    color: "from-[#c4d4e3] to-[#8398b1]",
-  },
-  {
-    id: 4,
-    title: "A long weekend in Lisbon",
-    dates: "Nov 02 - Nov 05, 2025",
-    places: "Lisbon, Sintra",
-    days: "3 days",
-    status: "Completed",
-    color: "from-[#ead2c7] to-[#c58978]",
-  },
 ];
 
 const sections = ["Ongoing", "Upcoming", "Completed"];
@@ -55,6 +30,29 @@ function TripListing() {
   const [query, setQuery] = useState("");
   const [sortAscending, setSortAscending] = useState(true);
   const [activeFilter, setActiveFilter] = useState("All trips");
+  const [trips, setTrips] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+    import("../lib/api").then(({ getTrips }) => {
+      getTrips()
+        .then((data) => {
+          if (!mounted) return;
+          setTrips(Array.isArray(data) ? data : sampleTrips.concat(data));
+        })
+        .catch((err) => {
+          console.warn("Failed to fetch trips, using sample data.", err);
+          if (mounted) setTrips(sampleTrips);
+        })
+        .finally(() => mounted && setLoading(false));
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const visibleTrips = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -71,30 +69,11 @@ function TripListing() {
         const comparison = firstTrip.title.localeCompare(secondTrip.title);
         return sortAscending ? comparison : -comparison;
       });
-  }, [activeFilter, query, sortAscending]);
+  }, [activeFilter, query, sortAscending, trips]);
 
   return (
     <main className="min-h-screen bg-[#f5f3ed] text-[#1b2821]">
-      <header className="border-b border-[#d8ddd6] bg-[#fbfaf6]">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
-          <a
-            className="flex items-center gap-2.5 text-sm font-bold tracking-tight"
-            href="/trips"
-          >
-            <span className="grid h-8 w-8 place-items-center rounded-[13px_13px_13px_3px] bg-[#1f5b45] text-[#f5f3ed]">
-              <Globe2 size={17} aria-hidden="true" />
-            </span>
-            GlobeTrotter
-          </a>
-          <button
-            className="grid h-9 w-9 place-items-center rounded-full border border-[#ccd5ce] text-[#1f5b45] transition hover:bg-[#eaf0ea]"
-            type="button"
-            aria-label="Open profile"
-          >
-            <UserCircle size={20} strokeWidth={1.7} />
-          </button>
-        </div>
-      </header>
+      <Header />
 
       <div className="mx-auto max-w-6xl px-5 py-8 sm:px-8 sm:py-11">
         <div className="mb-7 flex items-end justify-between gap-4">
@@ -106,12 +85,12 @@ function TripListing() {
               My trips
             </h1>
           </div>
-          <button
+          <Link
+            to="/trips/new"
             className="hidden items-center gap-2 rounded-md bg-[#1f5b45] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#164634] sm:flex"
-            type="button"
           >
             <span className="text-lg leading-none">+</span> Plan a new trip
-          </button>
+          </Link>
         </div>
 
         <div className="mb-9 flex flex-col gap-3 rounded-lg border border-[#d8ddd6] bg-[#fbfaf6] p-3 sm:flex-row sm:items-center">
@@ -168,6 +147,12 @@ function TripListing() {
         </div>
 
         <div className="space-y-8">
+          {loading && (
+            <p className="text-sm text-gray-500">Loading trips…</p>
+          )}
+          {error && (
+            <p className="text-sm text-red-500">Error: {error}</p>
+          )}
           {sections.map((section) => {
             const sectionTrips = visibleTrips.filter(
               (trip) => trip.status === section,
@@ -217,12 +202,12 @@ function TripListing() {
                             {trip.days}
                           </p>
                         </div>
-                        <button
+                        <Link
+                          to={`/trips/${trip.id}/itinerary`}
                           className="flex w-fit items-center gap-2 rounded-md border border-[#bfcac1] px-4 py-2 text-xs font-bold text-[#1f5b45] transition hover:border-[#1f5b45] hover:bg-[#edf3ed]"
-                          type="button"
                         >
                           View trip <span aria-hidden="true">→</span>
-                        </button>
+                        </Link>
                       </div>
                     </article>
                   ))}
@@ -236,12 +221,12 @@ function TripListing() {
             </p>
           )}
         </div>
-        <button
+        <Link
+          to="/trips/new"
           className="mt-6 flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-[#aebbb1] py-3 text-xs font-bold text-[#1f5b45] sm:hidden"
-          type="button"
         >
           + Plan a new trip
-        </button>
+        </Link>
       </div>
     </main>
   );
