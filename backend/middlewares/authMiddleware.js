@@ -1,9 +1,8 @@
 import jwt from "jsonwebtoken";
 import prisma from "../libs/prisma.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "globetrotter_dev_secret_change_in_prod";
-
 export const authMiddleware = async (req, res, next) => {
+  const JWT_SECRET = process.env.JWT_SECRET || "globetrotter_dev_secret_change_in_prod";
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {

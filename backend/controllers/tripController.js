@@ -37,6 +37,8 @@ export const getTrips = async (req, res) => {
       return {
         id: trip.id,
         title: trip.title,
+        startDate: trip.startDate,
+        endDate: trip.endDate,
         dates,
         places,
         days,
@@ -69,19 +71,6 @@ export const createTrip = async (req, res) => {
       userId,
       imageUrl: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80", // Default beautiful travel image
     };
-
-    if (destination) {
-      tripData.stops = {
-        create: [
-          {
-            city: destination,
-            country: "",
-            startDate: new Date(startDate),
-            endDate: new Date(endDate),
-          }
-        ]
-      };
-    }
 
     const trip = await prisma.trip.create({
       data: tripData,

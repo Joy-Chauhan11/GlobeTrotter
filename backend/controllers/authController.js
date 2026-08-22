@@ -2,8 +2,9 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import prisma from "../libs/prisma.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "globetrotter_dev_secret_change_in_prod";
 const JWT_EXPIRES = "7d";
+
+const getJwtSecret = () => process.env.JWT_SECRET || "globetrotter_dev_secret_change_in_prod";
 
 // POST /api/auth/register
 export const register = async (req, res) => {
@@ -30,7 +31,7 @@ export const register = async (req, res) => {
       },
     });
 
-    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: JWT_EXPIRES });
+    const token = jwt.sign({ userId: user.id, email: user.email }, getJwtSecret(), { expiresIn: JWT_EXPIRES });
 
     return res.status(201).json({
       token,
@@ -68,7 +69,7 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password." });
     }
 
-    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: JWT_EXPIRES });
+    const token = jwt.sign({ userId: user.id, email: user.email }, getJwtSecret(), { expiresIn: JWT_EXPIRES });
 
     return res.status(200).json({
       token,

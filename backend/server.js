@@ -9,6 +9,7 @@ import tripRoutes from "./routes/tripRoutes.js";
 import exploreRoutes from "./routes/exploreRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use("/api/trips", tripRoutes);
 app.use("/api/explore", exploreRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.listen(ENV.PORT, () => {
     console.log("GlobeTrotter is listening!!!!!");

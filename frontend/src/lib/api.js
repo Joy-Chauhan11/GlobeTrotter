@@ -87,6 +87,14 @@ export async function getAdminAnalytics() {
   return request(`/api/admin/analytics`);
 }
 
+export async function suggestStops(destination) {
+  return request(`/api/ai/suggest-stops?destination=${encodeURIComponent(destination)}`);
+}
+
+export async function suggestActivities(stop) {
+  return request(`/api/ai/suggest-activities?stop=${encodeURIComponent(stop)}`);
+}
+
 export default {
   getTrips,
   createTrip,
@@ -104,4 +112,6 @@ export default {
   getAdminPopularCities,
   getAdminPopularActivities,
   getAdminAnalytics,
+  suggestStops,
+  suggestActivities,
 };
